@@ -1,10 +1,10 @@
 <?php
 include("connect.php");
-
-$sql ="SELECT em.employeeNumber as Number, em.firstName as firstname, em.lastName as lastName, off.city as city_address_office, off.country as country_address_office
+$sql = "SELECT em.employeeNumber as Number, em.firstName as firstname, em.lastName as lastName, COUNT(ord.orderNumber) AS totalOrders
 FROM employees em
-LEFT OUTER JOIN offices off ON em.officeCode = off.officeCode";
-
+LEFT OUTER JOIN customers cou ON em.employeeNumber = cou.salesRepEmployeeNumber
+LEFT OUTER JOIN orders ord ON cou.customerNumber = ord.customerNumber
+GROUP BY em.employeeNumber, em.lastName, em.firstName;";
 $result = $connect->query($sql);
 ?>
 <!DOCTYPE html>
@@ -19,9 +19,9 @@ $result = $connect->query($sql);
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center;">ข้อมูลพนักงาน(เงื่อนไขที่ 1)</h1>
+        <h1 style="text-align: center;">ข้อมูลยอดรวมการสั่ง Order ทั้งหมดของพนักงาน(เงื่อนไขที่ 2)</h1>
         <div class="การปรับเเต่งปุ่ม">
-            <button onclick="window.location.href='index2.php'" class="but">ไปหน้า 2</button>
+            <button onclick="window.location.href='index.php'" class="but">ไปหน้า 1</button>
             <button onclick="window.location.href='index3.php'" class="but">ไปหน้า 3</button>
         </div>
         <table class="table">
@@ -30,8 +30,7 @@ $result = $connect->query($sql);
                     <td>รหัสพนักงาน</td>
                     <td >ชื่อพนักงาน</td>
                     <td >นามสกุลพนักงาน</td>
-                    <td >เมืองที่ตั้งของสำนักงานที่ทำงาน</td>
-                    <td >ประเทศที่ตั้งของสำนักงานที่ทำงาน</td>
+                    <td >ยอดรวมการสั่ง Order ทั้งหมด</td>
                 </tr>
             </thead>
             <tbody>
@@ -40,8 +39,7 @@ $result = $connect->query($sql);
                         <td><?php echo $row['Number'];?></td>
                         <td ><?php echo $row['firstname'];?></td>
                         <td><?php echo $row['lastName'];?></td>
-                        <td><?php echo $row['city_address_office'];?></td>
-                        <td><?php echo $row['country_address_office'];?></td>
+                        <td><?php echo $row['totalOrders'];?></td>
                     </tr>
                 <?php endwhile ?>
             </tbody>
